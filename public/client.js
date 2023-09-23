@@ -5,8 +5,9 @@ const messages = document.getElementById('messages');
 const inputMessage = document.getElementById('inputMessage');
 const sendButton = document.getElementById('sendButton');
 
+
 sendButton.addEventListener('click', function () {
-    if (!validateNick(nicknameInput.value))
+    if (!nicknameInput.disabled && !validateNick(nicknameInput.value))
         return;
 
     const message = {
@@ -21,7 +22,11 @@ sendButton.addEventListener('click', function () {
 
 const validateNick = (nick) => {
     if (!nick) {
-        alert("Wpisz nick!")
+        alert("Write Nick!")
+        return false;
+    }
+    if (messages.value.includes(`${nicknameInput.value}: `)) {
+        alert("Nick taken, select other one!")
         return false;
     }
 

@@ -12,13 +12,13 @@ let connectedClients = 0;
 
 io.on('connection', (socket) => {
     if (connectedClients >= 2) {
-        socket.emit('error', 'Maksymalna liczba klientów osiągnięta');
+        socket.emit('error', 'The maximum number of clients reached!');
         socket.disconnect();
         return;
     }
 
     connectedClients++;
-    console.log('Użytkownik połączony, obecnie podłączonych: ', connectedClients);
+    console.log('The user connected, current connections count: ', connectedClients);
 
     socket.on('send_message', (data) => {
         io.emit('receive_message', data);
@@ -26,11 +26,11 @@ io.on('connection', (socket) => {
 
     socket.on('disconnect', () => {
         connectedClients--;
-        console.log('Użytkownik rozłączony, obecnie podłączonych: ', connectedClients);
+        console.log('The user disconnected, current connections count: ', connectedClients);
     });
 });
 
 const PORT = 4000;
 server.listen(PORT, () => {
-    console.log(`Serwer uruchomiony na porcie ${PORT}`);
+    console.log(`The server has been started on port: ${PORT}`);
 });
