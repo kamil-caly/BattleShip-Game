@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ships Game</title>
+</head>
+
+<body>
+    <div>
+        <label for="nickname">Nick: </label>
+        <input id="nickname" type="text" placeholder="Wpisz swój nick">
+        <br>
+        <textarea id="messages" rows="10" cols="30" disabled></textarea>
+        <br>
+        <input id="inputMessage" type="text">
+        <button id="sendButton">Wyślij</button>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="client.js"></script>
+</body>
+
+</html>
