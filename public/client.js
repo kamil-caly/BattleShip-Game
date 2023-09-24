@@ -1,23 +1,32 @@
+import { Board } from "./board.js";
+
 const socket = io.connect('http://localhost:4000');
 
 const nicknameInput = document.getElementById('nickname');
 const messages = document.getElementById('messages');
-const inputMessage = document.getElementById('inputMessage');
-const sendButton = document.getElementById('sendButton');
+const nickButton = document.getElementById('nick_button');
+const playerBoardHTML = document.getElementById('player_board');
+const opponentBoardHTML = document.getElementById('opponent_board');
 
+const rows = 10;
+const cols = 10;
 
-sendButton.addEventListener('click', function () {
+let startGame = false;
+let playerBoard;
+let opponentBoard;
+
+nickButton.addEventListener('click', function () {
     if (!nicknameInput.disabled && !validateNick(nicknameInput.value))
         return;
 
-    const message = {
-        nickname: nicknameInput.value,
-        text: inputMessage.value
-    };
     makeNickInputDisable();
+    makeNickButtonDisable();
+    startGame = true;
+    playerBoard = new Board(playerBoardHTML, rows, cols);
+    opponentBoard = new Board(opponentBoardHTML, rows, cols);
 
-    socket.emit('send_message', message);
-    inputMessage.value = '';
+    //socket.emit('send_message', message);
+    //inputMessage.value = '';
 });
 
 const validateNick = (nick) => {
@@ -38,6 +47,11 @@ const makeNickInputDisable = () => {
         nicknameInput.disabled = true;
 }
 
+const makeNickButtonDisable = () => {
+    if (!nickButton.disabled)
+        nickButton.disabled = true;
+}
+
 socket.on('receive_message', function (data) {
     if (data.system) {
         messages.value += '[SYSTEM]: ' + data.text + '\n';
@@ -45,3 +59,11 @@ socket.on('receive_message', function (data) {
         messages.value += data.nickname + ': ' + data.text + '\n';
     }
 });
+
+opponentBoardHTML.addEventListener('click', function (e) {
+    console.log('e: ', e);
+    if (!startGame)
+        return;
+
+
+})

@@ -1,0 +1,31 @@
+
+.board {
+    width: 500px;
+    height: 500px;
+    margin: 20px 20px 20px 0px;
+    display: grid;
+    gap: 5px;
+    grid-template-columns: repeat(10, 1fr);
+    grid-template-rows: repeat(10, 1fr);
+    background-color: black;
+}
+
+.field {
+    background-color: rgb(116, 116, 116);
+}
+
+.hit_field {
+    background-color: rgb(9, 144, 185);
+}
+
+.missed_field {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.X::before {
+    content: "\2715";
+    font-size: 30px;
+    color: red;
+}
