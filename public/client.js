@@ -39,5 +39,9 @@ const makeNickInputDisable = () => {
 }
 
 socket.on('receive_message', function (data) {
-    messages.value += data.nickname + ': ' + data.text + '\n';
+    if (data.system) {
+        messages.value += '[SYSTEM]: ' + data.text + '\n';
+    } else {
+        messages.value += data.nickname + ': ' + data.text + '\n';
+    }
 });

@@ -19,6 +19,7 @@ io.on('connection', (socket) => {
 
     connectedClients++;
     console.log('The user connected, current connections count: ', connectedClients);
+    io.emit('receive_message', { system: true, text: 'A new user connected.' });
 
     socket.on('send_message', (data) => {
         io.emit('receive_message', data);
@@ -27,6 +28,7 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         connectedClients--;
         console.log('The user disconnected, current connections count: ', connectedClients);
+        io.emit('receive_message', { system: true, text: 'A user disconnected.' });
     });
 });
 
