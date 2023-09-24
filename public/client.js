@@ -22,8 +22,8 @@ nickButton.addEventListener('click', function () {
     makeNickInputDisable();
     makeNickButtonDisable();
     startGame = true;
-    playerBoard = new Board(playerBoardHTML, rows, cols);
-    opponentBoard = new Board(opponentBoardHTML, rows, cols);
+    playerBoard = new Board(playerBoardHTML, rows, cols, 7);
+    //opponentBoard = new Board(opponentBoardHTML, rows, cols);
 
     //socket.emit('send_message', message);
     //inputMessage.value = '';
