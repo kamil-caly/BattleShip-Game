@@ -47,7 +47,7 @@ export class Board {
                     for (let s of ship) {
                         this.gameBoard.filter(e => e.x === s.x && e.y === s.y)[0].shipPart = true;
                     }
-                    this.shipsCount -= 1
+                    tempShipCount -= 1
                 }
             }
         }
@@ -67,7 +67,8 @@ export class Board {
             return true;
         }
 
-        while (this.shipsCount > 0) {
+        let tempShipCount = this.shipsCount;
+        while (tempShipCount > 0) {
 
             const x = Math.floor(Math.random() * this.cols);
             const y = Math.floor(Math.random() * this.rows);
@@ -162,5 +163,10 @@ export class OpponentBoard extends Board {
     isFieldChecked(x, y) {
         const clickedDiv = document.getElementById(`${x}-${y}-Opponent`);
         return clickedDiv.classList.length > 1;
+    }
+
+    checkWin(boardHTML) {
+        const allFoundShipParts = boardHTML.querySelectorAll('.hit_field');
+        return allFoundShipParts?.length >= this.shipsCount * 4;
     }
 }

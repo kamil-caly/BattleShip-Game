@@ -10,7 +10,7 @@ const opponentBoardHTML = document.getElementById('opponent_board');
 
 const rows = 10;
 const cols = 10;
-const shipsCount = 5;
+const shipsCount = 1;
 
 let canClick = false;
 let playerBoard;
@@ -78,10 +78,13 @@ socket.on('receive_message', function (data) {
 
 opponentBoardHTML.addEventListener('click', function (e) {
     console.log('e: ', e.target.id);
-    if (!canClick)
+    if (!canClick || !opponentBoard)
         return;
 
-    opponentBoard && opponentBoard.checkField(Number(e.target.id.split('-')[0]), Number(e.target.id.split('-')[1]))
+    opponentBoard.checkField(Number(e.target.id.split('-')[0]), Number(e.target.id.split('-')[1]))
+    if (opponentBoard.checkWin(opponentBoardHTML)) {
+        setTimeout(_ => { alert('You win'); location.reload() }, 200);
+    }
 
     socket.emit('send_message', { nick: nicknameInput.value, board: playerBoard });
     socket.emit('send_message', { nickname: nicknameInput.value, checkedFieldId: e.target.id });
