@@ -12,7 +12,7 @@ const rows = 10;
 const cols = 10;
 const shipsCount = 5;
 
-let startGame = false;
+let canClick = false;
 let playerBoard;
 let opponentBoard;
 
@@ -22,11 +22,11 @@ nickButton.addEventListener('click', function () {
 
     makeNickInputDisable();
     makeNickButtonDisable();
-    startGame = true;
+    canClick = true;
+    messages.value += '[SYSTEM]: ' + nicknameInput.value + ' turn' + '\n';
     playerBoard = new PlayerBoard(rows, cols, shipsCount);
     playerBoard.initGameBoard();
     playerBoard.initHTMLBoard(playerBoardHTML);
-    //opponentBoard = new Board(opponentBoardHTML, rows, cols);
 
     socket.emit('send_message', { nick: nicknameInput.value, board: playerBoard });
     //inputMessage.value = '';
@@ -67,19 +67,24 @@ socket.on('receive_message', function (data) {
             data.board.gameBoard);
         opponentBoard.initHTMLBoard(opponentBoardHTML);
     } else if (data.checkedFieldId) {
-        messages.value += '[' + data.nickname + '] hit at pos: ' + data.checkedFieldId + '\n';
-        if (data.nickname !== nicknameInput.value)
+        messages.value += '[' + data.nickname + ']: clicked at -> ' + data.checkedFieldId + '\n';
+        if (data.nickname !== nicknameInput.value) {
             playerBoard.checkField(Number(data.checkedFieldId.split('-')[0]), Number(data.checkedFieldId.split('-')[1]))
+            canClick = true;
+            messages.value += '[SYSTEM]: ' + nicknameInput.value + ' turn' + '\n';
+        }
     }
 });
 
 opponentBoardHTML.addEventListener('click', function (e) {
     console.log('e: ', e.target.id);
-    if (!startGame)
+    if (!canClick)
         return;
 
     opponentBoard && opponentBoard.checkField(Number(e.target.id.split('-')[0]), Number(e.target.id.split('-')[1]))
 
     socket.emit('send_message', { nick: nicknameInput.value, board: playerBoard });
     socket.emit('send_message', { nickname: nicknameInput.value, checkedFieldId: e.target.id });
+
+    canClick = false;
 })
