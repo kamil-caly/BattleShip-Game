@@ -109,19 +109,16 @@ export class PlayerBoard extends Board {
             return;
 
         const clickedDiv = document.getElementById(`${x}-${y}-Player`);
-        if (checkedField.shipPart) {
-            clickedDiv.classList.add('hit_field');
-        } else {
-            clickedDiv.classList.add('missed_field');
-            const span = document.createElement('span');
-            span.classList.add('X_Player');
-            clickedDiv.appendChild(span);
-        }
+
+        clickedDiv.classList.add('missed_field');
+        const span = document.createElement('span');
+        span.classList.add('X_Player');
+        clickedDiv.appendChild(span);
     }
 
     isFieldChecked(x, y) {
         const clickedDiv = document.getElementById(`${x}-${y}-Player`);
-        return clickedDiv.classList.length > 1;
+        return clickedDiv.classList.contains('missed_field');
     }
 }
 
