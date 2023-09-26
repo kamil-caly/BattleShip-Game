@@ -1,4 +1,4 @@
-import { Board } from "./board.js";
+import { Board, OpponentBoard, PlayerBoard } from "./board.js";
 
 const socket = io.connect('http://localhost:4000');
 
@@ -10,6 +10,7 @@ const opponentBoardHTML = document.getElementById('opponent_board');
 
 const rows = 10;
 const cols = 10;
+const shipsCount = 5;
 
 let startGame = false;
 let playerBoard;
@@ -22,10 +23,12 @@ nickButton.addEventListener('click', function () {
     makeNickInputDisable();
     makeNickButtonDisable();
     startGame = true;
-    playerBoard = new Board(playerBoardHTML, rows, cols, 7);
+    playerBoard = new PlayerBoard(rows, cols, shipsCount);
+    playerBoard.initGameBoard();
+    playerBoard.initHTMLBoard(playerBoardHTML);
     //opponentBoard = new Board(opponentBoardHTML, rows, cols);
 
-    //socket.emit('send_message', message);
+    socket.emit('send_message', { nick: nicknameInput.value, board: playerBoard });
     //inputMessage.value = '';
 });
 
@@ -55,15 +58,28 @@ const makeNickButtonDisable = () => {
 socket.on('receive_message', function (data) {
     if (data.system) {
         messages.value += '[SYSTEM]: ' + data.text + '\n';
-    } else {
-        messages.value += data.nickname + ': ' + data.text + '\n';
+    } else if (data.board && data.nick !== nicknameInput.value && !opponentBoard) {
+        console.log('data.board: ', data.board);
+        opponentBoard = new OpponentBoard(
+            data.board.rows,
+            data.board.cols,
+            data.board.shipsCount,
+            data.board.gameBoard);
+        opponentBoard.initHTMLBoard(opponentBoardHTML);
+    } else if (data.checkedFieldId) {
+        messages.value += '[' + data.nickname + '] hit at pos: ' + data.checkedFieldId + '\n';
+        if (data.nickname !== nicknameInput.value)
+            playerBoard.checkField(Number(data.checkedFieldId.split('-')[0]), Number(data.checkedFieldId.split('-')[1]))
     }
 });
 
 opponentBoardHTML.addEventListener('click', function (e) {
-    console.log('e: ', e);
+    console.log('e: ', e.target.id);
     if (!startGame)
         return;
 
+    opponentBoard && opponentBoard.checkField(Number(e.target.id.split('-')[0]), Number(e.target.id.split('-')[1]))
 
+    socket.emit('send_message', { nick: nicknameInput.value, board: playerBoard });
+    socket.emit('send_message', { nickname: nicknameInput.value, checkedFieldId: e.target.id });
 })

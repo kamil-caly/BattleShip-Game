@@ -1,33 +1,14 @@
 export class Board {
-    constructor(boardHTML, rows, cols, shipsCount) {
-        this.boardHTML = boardHTML;
+    constructor(rows, cols, shipsCount, gameBoard) {
         this.rows = rows;
         this.cols = cols;
         this.shipsCount = shipsCount;
-        this.initGameBoard(rows, cols);
-        this.initHTMLBoard(rows, cols);
+        this.gameBoard = gameBoard ?? [];
     }
 
-    initHTMLBoard(rows, cols) {
-        for (let r = 0; r < rows; r++) {
-            for (let c = 0; c < cols; c++) {
-                let newField = document.createElement('div');
-                newField.id = `${r}-${c}`;
-                newField.classList.add('field');
-
-                // test
-                if (this.gameBoard.find(e => e.x === c && e.y === r)?.shipPart)
-                    newField.classList.add('hit_field');
-
-                this.boardHTML.appendChild(newField);
-            }
-        }
-    }
-
-    initGameBoard(rows, cols) {
-        this.gameBoard = [];
-        for (let r = 0; r < rows; r++) {
-            for (let c = 0; c < cols; c++) {
+    initGameBoard() {
+        for (let r = 0; r < this.rows; r++) {
+            for (let c = 0; c < this.cols; c++) {
                 this.gameBoard.push({ x: c, y: r, shipPart: false })
             }
         }
@@ -72,7 +53,6 @@ export class Board {
         }
 
         const validateShip = (ship) => {
-            console.log('ship: ', ship);
             for (let s of ship) {
                 if (this.gameBoard.find(e => e.x === s.x - 1 & e.y === s.y)?.shipPart)
                     return false;
@@ -88,10 +68,9 @@ export class Board {
         }
 
         while (this.shipsCount > 0) {
-            console.log("game board: ", this.gameBoard);
 
-            const x = Math.floor(Math.random() * cols);
-            const y = Math.floor(Math.random() * rows);
+            const x = Math.floor(Math.random() * this.cols);
+            const y = Math.floor(Math.random() * this.rows);
             const randomField = this.gameBoard.find(e => e.x === x && e.y === y);
             const ship = []
 
@@ -101,5 +80,90 @@ export class Board {
             }
         }
     }
+}
 
+
+export class PlayerBoard extends Board {
+    constructor(rows, cols, shipsCount, gameBoard) {
+        super(rows, cols, shipsCount, gameBoard)
+    }
+
+    initHTMLBoard(HTMLBoard) {
+        for (let r = 0; r < this.rows; r++) {
+            for (let c = 0; c < this.cols; c++) {
+                let newField = document.createElement('div');
+                newField.id = `${c}-${r}-Player`;
+                newField.classList.add('field');
+
+                if (this.gameBoard.find(e => e.x === c && e.y === r)?.shipPart)
+                    newField.classList.add('hit_field');
+
+                HTMLBoard.appendChild(newField);
+            }
+        }
+    }
+
+    checkField(x, y) {
+        const checkedField = this.gameBoard.find(e => e.x === x && e.y === y);
+        if (!checkedField || this.isFieldChecked(x, y))
+            return;
+
+        const clickedDiv = document.getElementById(`${x}-${y}-Player`);
+        if (checkedField.shipPart) {
+            clickedDiv.classList.add('hit_field');
+        } else {
+            clickedDiv.classList.add('missed_field');
+            const span = document.createElement('span');
+            span.classList.add('X_Player');
+            clickedDiv.appendChild(span);
+        }
+    }
+
+    isFieldChecked(x, y) {
+        const clickedDiv = document.getElementById(`${x}-${y}-Player`);
+        return clickedDiv.classList.length > 1;
+    }
+}
+
+
+export class OpponentBoard extends Board {
+    constructor(rows, cols, shipsCount, gameBoard) {
+        super(rows, cols, shipsCount, gameBoard)
+    }
+
+    initHTMLBoard(HTMLBoard) {
+        for (let r = 0; r < this.rows; r++) {
+            for (let c = 0; c < this.cols; c++) {
+                let newField = document.createElement('div');
+                newField.id = `${c}-${r}-Opponent`;
+                newField.classList.add('field');
+
+                // if (this.gameBoard.find(e => e.x === c && e.y === r)?.shipPart)
+                //     newField.classList.add('hit_field');
+
+                HTMLBoard.appendChild(newField);
+            }
+        }
+    }
+
+    checkField(x, y) {
+        const checkedField = this.gameBoard.find(e => e.x === x && e.y === y);
+        if (!checkedField || this.isFieldChecked(x, y))
+            return;
+
+        const clickedDiv = document.getElementById(`${x}-${y}-Opponent`);
+        if (checkedField.shipPart) {
+            clickedDiv.classList.add('hit_field');
+        } else {
+            clickedDiv.classList.add('missed_field');
+            const span = document.createElement('span');
+            span.classList.add('X_Opponent');
+            clickedDiv.appendChild(span);
+        }
+    }
+
+    isFieldChecked(x, y) {
+        const clickedDiv = document.getElementById(`${x}-${y}-Opponent`);
+        return clickedDiv.classList.length > 1;
+    }
 }

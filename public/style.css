@@ -24,7 +24,13 @@
     align-items: center;
 }
 
-.X::before {
+.X_Player::before {
+    content: "\2715";
+    font-size: 30px;
+    color: rgb(215, 162, 17);
+}
+
+.X_Opponent::before {
     content: "\2715";
     font-size: 30px;
     color: red;
