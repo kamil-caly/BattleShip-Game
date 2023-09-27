@@ -7,10 +7,11 @@ const messages = document.getElementById('messages');
 const nickButton = document.getElementById('nick_button');
 const playerBoardHTML = document.getElementById('player_board');
 const opponentBoardHTML = document.getElementById('opponent_board');
+const gameInfoHTML = document.getElementById('game_info');
 
 const rows = 10;
 const cols = 10;
-const shipsCount = 1;
+const shipsCount = 3;
 
 let canClick = false;
 let playerBoard;
@@ -29,7 +30,6 @@ nickButton.addEventListener('click', function () {
     playerBoard.initHTMLBoard(playerBoardHTML);
 
     socket.emit('send_message', { nick: nicknameInput.value, board: playerBoard });
-    //inputMessage.value = '';
 });
 
 const validateNick = (nick) => {
@@ -37,7 +37,7 @@ const validateNick = (nick) => {
         alert("Write Nick!")
         return false;
     }
-    if (messages.value.includes(`${nicknameInput.value}: `)) {
+    if (messages.value.includes(`[${nicknameInput.value}]: `)) {
         alert("Nick taken, select other one!")
         return false;
     }
@@ -59,7 +59,7 @@ socket.on('receive_message', function (data) {
     if (data.system) {
         messages.value += '[SYSTEM]: ' + data.text + '\n';
     } else if (data.board && data.nick !== nicknameInput.value && !opponentBoard) {
-        console.log('data.board: ', data.board);
+        gameInfoHTML.innerHTML = `${shipsCount} ships left`;
         opponentBoard = new OpponentBoard(
             data.board.rows,
             data.board.cols,
@@ -77,17 +77,27 @@ socket.on('receive_message', function (data) {
 });
 
 opponentBoardHTML.addEventListener('click', function (e) {
-    console.log('e: ', e.target.id);
-    if (!canClick || !opponentBoard)
+    if (!canClick || !opponentBoard || !e.target.classList.contains('field'))
         return;
 
     opponentBoard.checkField(Number(e.target.id.split('-')[0]), Number(e.target.id.split('-')[1]))
     if (opponentBoard.checkWin(opponentBoardHTML)) {
-        setTimeout(_ => { alert('You win'); location.reload() }, 200);
+        gameInfoHTML.innerHTML = 'All ships hit'
+        setTimeout(_ => { alert('You win'); location.reload() }, 100);
     }
+
+    updateTextAboutRestOfOpponentShips()
 
     socket.emit('send_message', { nick: nicknameInput.value, board: playerBoard });
     socket.emit('send_message', { nickname: nicknameInput.value, checkedFieldId: e.target.id });
 
     canClick = false;
 })
+
+const updateTextAboutRestOfOpponentShips = () => {
+    const hitField = opponentBoardHTML.querySelectorAll('.hit_field');
+    const allFoundedShips = Math.floor(hitField.length / 4);
+    const lostShips = shipsCount - allFoundedShips;
+
+    gameInfoHTML.innerHTML = `${lostShips} ships left`;
+}

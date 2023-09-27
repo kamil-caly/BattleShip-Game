@@ -136,9 +136,6 @@ export class OpponentBoard extends Board {
                 newField.id = `${c}-${r}-Opponent`;
                 newField.classList.add('field');
 
-                // if (this.gameBoard.find(e => e.x === c && e.y === r)?.shipPart)
-                //     newField.classList.add('hit_field');
-
                 HTMLBoard.appendChild(newField);
             }
         }
@@ -166,7 +163,7 @@ export class OpponentBoard extends Board {
     }
 
     checkWin(boardHTML) {
-        const allFoundShipParts = boardHTML.querySelectorAll('.hit_field');
-        return allFoundShipParts?.length >= this.shipsCount * 4;
+        const hitField = boardHTML.querySelectorAll('.hit_field');
+        return hitField?.length >= this.shipsCount * 4;
     }
 }
